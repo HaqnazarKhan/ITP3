@@ -1,0 +1,48 @@
+header {
+    background-color:#1E1E24 ; /* Если захочешь вернуться к палитре Найтвинга, замени на #1E1E24   rgb(59, 29, 75)*/
+    color: white;
+    padding: 20px 0; /* Добавляет 20px отступа сверху и снизу. Именно это увеличит фон! */
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    padding-left: 100px;
+}
+.logo img {
+    height: 55px; /* базовый размер */
+    transform: scale(1.3); /* увеличивает на 30% */
+    transform-origin: left center; /* чтобы рос от левого края */
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: auto; /* Даем нормальную ширину для сайта */
+    margin: 0 auto; /* Автоматически центрирует контейнер по горизонтали */
+    padding: 0 20px; /* Чтобы текст не прилипал к самым краям монитора на маленьких экранах */
+}
+
+body {
+    background-color: #121212;
+    margin: 0;
+    padding: 0;
+}
+
+
+.button{
+    background-color: #1A53FF;
+    color:#E0E0E0;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+label{
+    color: #E0E0E0;
+}
+
+h3{
+    color: #E0E0E0;
+}

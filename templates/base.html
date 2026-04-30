@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href = "{{url_for('static', filename = 'css/main.css')}}">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+
+    <header class = 'header'>
+
+        <div class = 'container'>
+
+            <div class="logo">
+                <img src="{{ url_for('static', filename='pictures/logo.png') }}">
+            </div>
+            
+            
+            <nav>
+
+                <a class = 'button' href = "/add">add movie</a>
+
+                <a class = 'button' href = "/movies">all movies</a>
+
+                <ul>
+
+                </ul>
+            </nav>
+
+        </div>
+
+    </header>
+
+
+
+    {% block body %}
+    
+    {% endblock %}
+</body>
+</html>
