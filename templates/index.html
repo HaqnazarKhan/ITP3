@@ -1,9 +1,37 @@
 {% extends "base.html" %}
 
 {% block title %}
-main page
+Cave
 {% endblock %}
 
 {% block body %}
-main page cool
+
+<div class="main-content">
+    <h1 style="color: white; margin-top: 30px; margin-bottom: 20px;">Movies</h1>
+    
+    <div class="movie-grid">
+        {% if movies %}
+            {% for movie in movies %}
+                <a href="/movie/{{ movie.id }}" class="movie-card">
+
+                    {% if movie.poster %}
+
+                        <img src="{{ url_for('static', filename='pictures/' + movie.poster) }}" alt="{{ movie.movie_title }}" class="movie-image">
+                        <h3>{{ movie.movie_title}}</h3>
+                        <h3>{{ movie.release_year}}</h3>
+                    {% else %}
+
+                        <div class="movie-poster">
+                            <h3>{{ movie.movie_title }}</h3>
+                            <p>{{ movie.release_year }}</p>
+                        </div>
+                    {% endif %}
+    
+                </a>
+            {% endfor %}
+        {% else %}
+            <p style="color: #888;">You haven't added any movies. <a href="/add_movie" style="color: #1A53FF;">Add first movie?</a></p>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

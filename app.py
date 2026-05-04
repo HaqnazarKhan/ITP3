@@ -1,19 +1,20 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+import os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mymovielist.db'
 db = SQLAlchemy(app)
 
-# --- Таблица 1: Фильмы ---
+
 class Movie(db.Model):
     __tablename__ = 'movies'
     
-    # Меняем movie_id просто на id, чтобы оно совпадало с ForeignKey
+
     id = db.Column(db.Integer, primary_key=True) 
     
-    # Остальные твои колонки (тут я оставил твой вариант с префиксами)
+
     movie_title = db.Column(db.String(100), nullable=False)
     movie_description = db.Column(db.Text, nullable=True)
     release_year = db.Column(db.Integer, nullable=True)
@@ -26,12 +27,12 @@ class Movie(db.Model):
     def __repr__(self):
         return f'<Movie {self.id}: {self.movie_title}>'
 
-# --- Таблица 2: Твои отзывы ---
+
 class Review(db.Model):
     __tablename__ = 'reviews'
     id = db.Column(db.Integer, primary_key=True)
     
-    # Теперь он будет успешно ссылаться на колонку id в таблице movies
+
     movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), nullable=False)
     
     rating = db.Column(db.Integer, nullable=True)
@@ -45,56 +46,143 @@ class Review(db.Model):
 @app.route('/')
 @app.route("/home")
 def index():
-    return render_template("index.html")
 
+    all_movies = Movie.query.order_by(Movie.id.desc()).all()
 
-@app.route('/movies')
-def movies():
-    movies = Movie.query.order_by(Movie.release_year).all()
-    return render_template('movies.html',movies = movies)
+    return render_template("index.html", movies=all_movies)
 
 
 
-# methods=['GET', 'POST'] означает, что эта страница может и показывать форму (GET), и принимать из нее данные (POST)
-@app.route('/add', methods=['GET', 'POST'])
+
+@app.route('/add_movie', methods=['GET', 'POST'])
 def add_movie():
     if request.method == 'POST':
-        # 1. Забираем данные, которые ты ввел в HTML-форму
         title = request.form['title']
         release_year = request.form['release_year']
         director = request.form['director']
-        movie_description = request.form['movie_description']
-        
-        # Получаем файл постера
+
+
         file = request.files.get('movie_poster')
-    
-        if file:
-            filename = file.filename
-            file.save(f"static/posters/{filename}") # Сохраняем файл в папку
-        else:
-            filename = None
+        poster_filename = None 
 
 
-        # 2. Создаем фильм и сохраняем, чтобы получить его ID
+        if file and file.filename != '':
+            poster_filename = file.filename
+
+            file.save(os.path.join('static', 'pictures', poster_filename))
+
+
         new_movie = Movie(
-            movie_title=title,
-            release_year=release_year,
-            director=director,  # <-- ВАЖНО
-            poster=filename,          # <-- тоже исправил
-            movie_description=movie_description
-)
+            movie_title=title, 
+            release_year=release_year, 
+            director=director, 
+            poster=poster_filename
+        )
         
-        try:
-            db.session.add(new_movie)
-            db.session.commit() 
-            return redirect(url_for('index'))
-        except:
-            return 'Error happend'
+        db.session.add(new_movie)
+        db.session.commit() 
 
-    # Если мы просто зашли на страницу (GET), показываем пустую форму
-    return render_template('add.html')
+        return redirect(url_for('movie_detail', movie_id=new_movie.id))
+
+    return render_template('add_movie.html')
+
+
+@app.route('/movie/<int:movie_id>', methods=['GET', 'POST'])
+def movie_detail(movie_id):
+
+    movie = Movie.query.get_or_404(movie_id)
+
+
+    if request.method == 'POST':
+        rating = request.form['rating']
+        review_text = request.form['review_text']
+
+
+        new_review = Review(movie_id=movie.id, rating=rating, review_text=review_text)
+        db.session.add(new_review)
+        db.session.commit()
+
+
+        return redirect(url_for('movie_detail', movie_id=movie.id))
+
+
+    return render_template('movie.html', movie=movie)
+
+@app.route('/movie/<int:movie_id>/delete', methods = ['POST'])
+def delete_movie(movie_id):
+    movie_to_delete = Movie.query.get_or_404(movie_id)
+    
+    try:
+        db.session.delete(movie_to_delete)
+        db.session.commit()
+
+        return redirect(url_for('index'))
+    except:
+        return "Error"
+
+
+@app.route('/review/<int:review_id>/delete', methods = ['POST'])
+def delete_review(review_id):
+    review_to_delete = Review.query.get_or_404(review_id)
+    movie_id= review_to_delete.movie_id
+    
+    try:
+        db.session.delete(review_to_delete)
+        db.session.commit()
+        
+        return redirect(url_for('movie_detail', movie_id = movie_id))
+    except:
+        return "deleting error"
     
 
+
+    
+@app.route('/movie/<int:movie_id>/update', methods=['GET', 'POST'])
+def update_movie(movie_id):
+    
+    movie = Movie.query.get_or_404(movie_id)
+    
+    if request.method == 'POST':
+        
+        movie.movie_title = request.form['title']
+        movie.release_year = request.form['release_year']
+        movie.director = request.form['director']
+
+
+        file = request.files.get('movie_poster')
+        
+
+        if file and file.filename != '':
+            poster_filename = file.filename
+            file.save(os.path.join('static', 'pictures', poster_filename))
+            movie.poster = poster_filename 
+
+        db.session.commit() 
+
+        return redirect(url_for('movie_detail', movie_id=movie.id))
+
+    return render_template('update_movie.html', movie= movie)
+
+
+@app.route('/review/<int:review_id>/update', methods = ['GET', 'POST'])
+def update_review(review_id):
+        
+    review = Review.query.get_or_404(review_id)
+    movie_id = review.movie_id
+    
+
+    if request.method == 'POST':
+        review.rating = request.form['rating']
+        review.review_text = request.form['review_text']
+        
+
+        db.session.commit()
+
+
+        return redirect(url_for('movie_detail', movie_id=movie_id))
+
+
+    return render_template('update_review.html', review=review)
 
 
 if __name__ == "__main__":

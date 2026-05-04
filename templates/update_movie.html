@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}
+Update page
+{% endblock %}
+
+{% block body %}
+<div class = 'container'>
+    <h1></h1>
+
+    <form method="POST" class="movie-form" enctype="multipart/form-data">
+        
+        <h3>Редактировать фильм</h3>
+        
+        <label>Movie name:</label><br>
+
+        <input type="text" name="title" value="{{ movie.movie_title }}" required><br><br>
+        
+        <label>Release date:</label><br>
+        <input type="number" name="release_year" value="{{ movie.release_year }}"><br><br>
+    
+        <label>Director:</label><br>
+        <input type="text" name="director" value="{{ movie.director }}"><br><br>
+    
+        <label for="movie_poster">Movie poster:</label><br>
+        <input type="file" id="movie_poster" name="movie_poster" accept="image/*"><br><br>
+    
+        <button type="submit" class="btn-primary">Save Changes</button>
+    </form>
+
+</div>
+{% endblock %}

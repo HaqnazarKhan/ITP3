@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Update review{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h3>Update review</h3>
+    <form method="POST" class="movie-form">
+        
+        <label>Score (1-10):</label><br>
+
+        <input type="number" name="rating" min="1" max="10" value="{{ review.rating }}"><br><br>
+        
+        <label>Your thoughts about movie:</label><br>
+
+        <textarea name="review_text" rows="4" style="width: 95%;">{{ review.review_text }}</textarea><br><br>
+
+        <button type="submit" style="background-color: #1A53FF; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">Save changes</button>
+    </form>
+</div>
+{% endblock %}

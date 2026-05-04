@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}
+add movie
+{% endblock %}
+
+{% block body %}
+
+
+<div class="container">
+
+    <form action="/add_movie" method="POST" class="movie-form" enctype="multipart/form-data">
+        
+        <h3>Add new movie</h3>
+        <label>Movie name:</label><br>
+        <input type="text" name="title" required><br><br>
+        
+        <label>Release date:</label><br>
+        <input type="number" name="release_year"><br><br>
+
+        <label>Director:</label><br>
+        <input type="text" name="director"><br><br>
+
+
+        <label for="movie_poster">Movie poster:</label><br>
+        <input type="file" id="movie_poster" name="movie_poster" accept="image/*"><br><br>
+
+        <button type="submit" class="btn-primary">Save</button>
+    </form>
+</div>
+
+{% endblock %}

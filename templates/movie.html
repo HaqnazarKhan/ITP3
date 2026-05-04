@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ movie.movie_title}}
+{% endblock %}
+
+{% block body %}
+<div style="max-width: 800px; margin: 50px auto;">
+        
+
+    <div style="background-color: #1E1E24; padding: 30px; border-radius: 8px; margin-bottom: 20px;">
+        <h1 style="color: white; margin-top: 0;">{{ movie.movie_title }} ({{ movie.release_year }})</h1>
+        <p style="color: #888;">Director: {{ movie.director }}</p>
+        <form action="/movie/{{ movie.id }}/delete" method="POST" style="display: inline-block; margin-top: 10px;">
+            <button type="submit" class="delete-button" style="background-color: #ff3333; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                Delete
+            </button>
+        </form>
+        <a href="/movie/{{ movie.id }}/update" style="display: text-decoration: none; inline-block; background-color: #1A53FF; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; margin-top: 10px;">Update</a>
+    </div>
+
+    <h3>My reviews</h3>
+    {% if movie.reviews %}
+        {% for review in movie.reviews %}
+            <div style="background-color: #2C2F33; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #1A53FF;">
+                <p><b>Score:</b> <span style="color: #1A53FF; font-size: 1.2em;">{{ review.rating }}/10</span></p>
+                <p style="margin: 0;">{{ review.review_text }}</p>
+                <small style="color: #888; display: block; margin-top: 10px;">Added: {{ review.time_added.strftime('%d.%m.%Y') }}</small>
+                <form action="/review/{{ review.id }}/delete" method="POST" style="display: inline-block; margin-top: 10px;">
+                    <button type="submit" class="delete-button" style="background-color: #ff3333; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                        Delete
+                    </button>
+                </form>
+
+                <a href="/review/{{ review.id }}/update" style="display: inline-block; background-color: #1A53FF; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; margin-top: 10px; margin-right: 10px;">
+                    Update
+                </a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>There is no reviews.</p>
+    {% endif %}
+
+    <div style="background-color: #1E1E24; padding: 20px; border-radius: 8px; margin-top: 30px;">
+        <h3>Write new review</h3>
+        <form action="/movie/{{ movie.id }}" method="POST">
+            <label>Score (1-10):</label><br>
+            <input type="number" name="rating" min="1" max="10" style="width: 100px; margin-bottom: 10px;"><br>
+            
+            <label>Share your thoughts: </label><br>
+            <textarea name="review_text" rows="4" style="width: 95%; margin-bottom: 10px;"></textarea><br>
+
+            <button type="submit" style="background-color: #1A53FF; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">Add new review</button>
+
+        </form>
+
+    </div>
+
+
+</div>
+{% endblock %}
